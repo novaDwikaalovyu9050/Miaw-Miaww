@@ -48,12 +48,12 @@
 
     @keyframes moveRightDown {
       0% { transform: translate(0, 0); }
-      100% { transform: translate(200vw, 200vh); }
+      100% { transform: translate(200vw, 0); }
     }
 
     @keyframes moveLeftUp {
       0% { transform: translate(0, 0); }
-      100% { transform: translate(-200vw, -200vh); }
+      100% { transform: translate(-200vw, 0); }
     }
 
     header {
@@ -64,18 +64,25 @@
       font-weight: bold;
     }
 
-    .theme-toggle {
+    .theme-toggle, .music-player {
       margin: 1rem;
       text-align: center;
     }
 
-    .theme-toggle button {
+    .theme-toggle button, .music-player button, .music-player select {
       padding: 0.5rem 1rem;
       font-size: 1rem;
       background-color: var(--accent);
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin: 0.25rem;
+    }
+
+    .track-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: bold;
     }
 
     .container {
@@ -176,6 +183,13 @@
     <button onclick="toggleTheme()">Theme</button>
   </div>
 
+  <div class="music-player">
+    <div class="track-title" id="trackTitle">🎵</div>
+    <button onclick="toggleMusic()">Play/Pause</button>
+    <button onclick="nextTrack()">Next Music</button>
+    <select id="trackSelect" onchange="selectTrack(this.value)"></select>
+  </div>
+
   <div class="container">
     <section class="profile">
       <h2>Nanda Quila</h2>
@@ -214,12 +228,14 @@
   <div class="modal" id="modal">
     <div class="modal-content">
       <h3>Pilih Platform untuk Kirim Pesan</h3>
-      <a href="https://wa.me/6282113148932" target="_blank" id="waLink">WhatsApp</a>
-      <a href="https://www.instagram.com/dhiekaaquilaa?igsh=YXF3eWhjdXQzYWE0" target="_blank" id="igLink">Instagram</a>
-      <a href="https://www.tiktok.com/@apaajagtau5?_t=ZS-8wugESj53ge&_r=1" target="_blank" id="ttLink">TikTok</a>
+      <a href="https://wa.me/6282113148932" target="_blank">WhatsApp</a>
+      <a href="https://www.instagram.com/dhiekaaquilaa?igsh=YXF3eWhjdXQzYWE0" target="_blank">Instagram</a>
+      <a href="https://www.tiktok.com/@apaajagtau5?_t=ZS-8wugESj53ge&_r=1" target="_blank">TikTok</a>
       <button onclick="hideOptions()">Tutup</button>
     </div>
   </div>
+
+  <audio id="bgMusic" autoplay loop></audio>
 
   <script>
     function toggleTheme() {
@@ -235,7 +251,7 @@
     }
 
     const bg = document.getElementById('bgBalls');
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 200; i++) {
       const ball = document.createElement('div');
       const size = Math.random() * 20 + 10;
       ball.classList.add('ball');
@@ -247,6 +263,57 @@
       ball.style.animation = `${Math.random() > 0.5 ? 'moveRightDown' : 'moveLeftUp'} ${20 + Math.random() * 10}s linear infinite`;
       bg.appendChild(ball);
     }
+
+    const tracks = [
+      { url: "https://files.catbox.moe/ih8cxl.mp3", title: "KAMI PHONK - Dr.M0B" },
+      { url: "https://files.catbox.moe/3o33by.mp3", title: "everything works out in the end - Luke Willies" },
+      { url: "https://files.catbox.moe/4c5c3q.mp3", title: "ours to keep - Kendis" },
+      { url: "https://files.catbox.moe/jp0bfp.mp3", title: "message in a bottle - Taylor Swift" },
+      { url: "https://files.catbox.moe/evm9e1.mp3", title: "DEFEATED - Dr.M0b" },
+      { url: "https://files.catbox.moe/g50rmm.mp3", title: "Ava - Famy" }
+    ];
+
+    let currentTrack = 0;
+    const audio = document.getElementById('bgMusic');
+    const titleDisplay = document.getElementById('trackTitle');
+    const trackSelect = document.getElementById('trackSelect');
+
+    // Populate select
+    tracks.forEach((track, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = track.title;
+      trackSelect.appendChild(option);
+    });
+
+    function loadTrack(index) {
+      currentTrack = index;
+      audio.src = tracks[currentTrack].url;
+      titleDisplay.textContent = `🎵 ${tracks[currentTrack].title}`;
+      trackSelect.value = index;
+      audio.play();
+    }
+
+    function toggleMusic() {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    function nextTrack() {
+      currentTrack = (currentTrack + 1) % tracks.length;
+      loadTrack(currentTrack);
+    }
+
+    function selectTrack(index) {
+      loadTrack(parseInt(index));
+    }
+
+    // Initial load
+    loadTrack(currentTrack);
   </script>
 </body>
 </html>
+
